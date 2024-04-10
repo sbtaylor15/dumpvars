@@ -52,7 +52,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.gh_token }}
         run: |
-          npm install -g widdershins
+          npm install -g openapi-to-md
           docker run --name swagger -p 8080:8080 --rm -d quay.io/ortelius/ms-dep-pkg-r:main-v10.0.705-g5a746f
           mkdir docs 2>/dev/null | test 1
           sleep 10
@@ -60,7 +60,7 @@ jobs:
           docker stop swagger
           cd docs
           cat openapi.json
-          widdershins openapi.json -o openapi.md
+          openapi-to-md openapi.json openapi.md
           cd ..
           git pull
           git add docs
