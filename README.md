@@ -11,42 +11,174 @@
 
 
 ![Discord](https://img.shields.io/discord/722468819091849316)
-Dependency Package Data Microservice - Create, Update and Delete
+# ortelius-ms-dep-pkg-cud
 
-HELM_CHART
+> Version 10.0.0
 
-- port:8080
-- package name : deppkg
+RestAPI endpoint for retrieving SBOM data to a component
 
-postgress [test database docker image](https://github.com/ortelius/test-database)
-Pull and run the above image
+## Path Table
 
-Create Table [Componentdep SQL Query](https://github.com/ortelius/ortelius/blob/main/dmadminweb/WebContent/WEB-INF/schema/2021122706.sql)
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | [/health](#gethealth) | Health |
+| GET | [/msapi/deppkg](#getmsapideppkg) | Get Comp Pkg Deps |
 
-Microservice
+## Reference Table
 
-- url: localhost:5000/msapi/deppkg
+| Name | Path | Description |
+| --- | --- | --- |
+| DepPkg | [#/components/schemas/DepPkg](#componentsschemasdeppkg) |  |
+| DepPkgs | [#/components/schemas/DepPkgs](#componentsschemasdeppkgs) |  |
+| HTTPValidationError | [#/components/schemas/HTTPValidationError](#componentsschemashttpvalidationerror) |  |
+| StatusMsg | [#/components/schemas/StatusMsg](#componentsschemasstatusmsg) |  |
+| ValidationError | [#/components/schemas/ValidationError](#componentsschemasvalidationerror) |  |
 
-methods:
+## Path Details
 
-- POST
+***
 
-  sample call:
+### [GET]/health
 
-   ```bash
-   curl -X POST - -H "Content-Type: application/json" -d @FILENAME DESTINATION http://localhost:5000/msapi/deppkg?compid=1234
-   ```
+- Summary  
+Health
 
-- DELETE
+- Description  
+This health check end point used by Kubernetes
 
-  Deletes component by component id passed as query Parameter
+#### Responses
 
-  sample call:
+- 200 Successful Response
 
-  ```bash
-  curl -X DELETE localhost:5000/msapi/compitem?comp_id=1
-  ```
+`application/json`
 
-## Fixed CVEs
+```ts
+{
+  status?: string
+  service_name?: string
+}
+```
 
-- 2/27/23 - [CVE-2023-25139](https://www.openwall.com/lists/oss-security/2023/02/10/1)
+***
+
+### [GET]/msapi/deppkg
+
+- Summary  
+Get Comp Pkg Deps
+
+- Description  
+This is the end point used to retrieve the component's SBOM (package dependencies)
+
+#### Parameters(Query)
+
+```ts
+compid?: Partial(integer) & Partial(null)
+```
+
+```ts
+appid?: Partial(integer) & Partial(null)
+```
+
+```ts
+deptype?: string
+```
+
+#### Responses
+
+- 200 Successful Response
+
+`application/json`
+
+```ts
+{
+  data: {
+    packagename?: string
+    packageversion?: string
+    pkgtype?: string
+    name?: string
+    url?: string
+    summary?: string
+    fullcompname?: string
+    risklevel?: string
+  }[]
+}
+```
+
+- 422 Validation Error
+
+`application/json`
+
+```ts
+{
+  detail: {
+    loc?: Partial(string) & Partial(integer)[]
+    msg: string
+    type: string
+  }[]
+}
+```
+
+## References
+
+### #/components/schemas/DepPkg
+
+```ts
+{
+  packagename?: string
+  packageversion?: string
+  pkgtype?: string
+  name?: string
+  url?: string
+  summary?: string
+  fullcompname?: string
+  risklevel?: string
+}
+```
+
+### #/components/schemas/DepPkgs
+
+```ts
+{
+  data: {
+    packagename?: string
+    packageversion?: string
+    pkgtype?: string
+    name?: string
+    url?: string
+    summary?: string
+    fullcompname?: string
+    risklevel?: string
+  }[]
+}
+```
+
+### #/components/schemas/HTTPValidationError
+
+```ts
+{
+  detail: {
+    loc?: Partial(string) & Partial(integer)[]
+    msg: string
+    type: string
+  }[]
+}
+```
+
+### #/components/schemas/StatusMsg
+
+```ts
+{
+  status?: string
+  service_name?: string
+}
+```
+
+### #/components/schemas/ValidationError
+
+```ts
+{
+  loc?: Partial(string) & Partial(integer)[]
+  msg: string
+  type: string
+}
+```
