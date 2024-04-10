@@ -60,6 +60,7 @@ jobs:
           cat openapi.json
           widdershins openapi.json -o openapi.md
           cd ..
+          git pull
           git add docs
           git commit -m "update openapi docs"
           git push
