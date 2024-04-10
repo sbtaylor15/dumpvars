@@ -5,7 +5,9 @@ on:
     branches:
       - main
   workflow_dispatch: # Manual trigger
-
+  repository_dispatch:
+    types:
+      - dumpvars
 jobs:
   dump_variables:
     runs-on: ubuntu-latest
