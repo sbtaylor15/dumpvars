@@ -37,7 +37,9 @@ jobs:
         run: |
           docker run --name swagger -p 8080:8080 --rm -d quay.io/ortelius/ms-dep-pkg-r:main-v10.0.705-g5a746f
           mkdir docs 2>/dev/null | test 1
+          sleep 10
           wget http://localhost:8080/openapi.json -o docs/openapi.json
+          ls docs
           docker stop  swagger
           npm install -g widdershins
           widdershins docs/openapi.json -o docs/openapi.md
