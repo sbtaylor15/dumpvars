@@ -2,6 +2,8 @@ name: Dump Variables
 
 on:
   push:
+    paths-ignore:
+      - 'docs/**'
     branches:
       - main
   workflow_dispatch: # Manual trigger
@@ -40,9 +42,11 @@ jobs:
           sleep 10
           wget http://localhost:8080/openapi.json -o docs/openapi.json
           ls docs
-          docker stop  swagger
+          docker stop swagger
           npm install -g widdershins
-          widdershins docs/openapi.json -o docs/openapi.md
+          cd docs
+          widdershins openapi.json -o openapi.md
+          cd ..
           git add docs
           git commit -m "update openapi docs"
           git push
