@@ -49,6 +49,8 @@ jobs:
           echo '${{ toJson(github) }}' | jq '.'
 
       - name: Swagger
+        env:
+          GH_TOKEN: ${{ secrets.gh_token }}
         run: |
           npm install -g widdershins
           docker run --name swagger -p 8080:8080 --rm -d quay.io/ortelius/ms-dep-pkg-r:main-v10.0.705-g5a746f
