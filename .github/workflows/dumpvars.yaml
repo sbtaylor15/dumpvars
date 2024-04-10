@@ -52,13 +52,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.gh_token }}
         run: |
-          npm install -g openapi-to-md
-          docker run --name swagger -p 8080:8080 --rm -d quay.io/ortelius/ms-dep-pkg-r:main-v10.0.705-g5a746f
-          sleep 5
-          wget http://localhost:8080/openapi.json -O /tmp/openapi.json
-          docker stop swagger
-          sed -i.bak "/\[Discord\]/q" README.md && openapi-to-md /tmp/openapi.json >> README.md && rm README.md.bak
-          git pull
-          git add README.md
-          git commit -m "update readme with latest swagger"
-          git push
+          if [ -f "main.py" ] && grep -q '\[Discord\]' main.py; then
+            npm install -g openapi-to-md
+            docker run --name swagger -p 8080:8080 --rm -d quay.io/ortelius/ms-dep-pkg-r:main-v10.0.705-g5a746f
+            sleep 5
+            wget http://localhost:8080/openapi.json -O /tmp/openapi.json
+            docker stop swagger
+            sed -i.bak "/\[Discord\]/q" README.md && openapi-to-md /tmp/openapi.json | tail -n +2 >> README.md && rm README.md.bak
+            git pull
+            git add README.md
+            git commit -m "update readme with latest swagger"
+            git push
+          fi
