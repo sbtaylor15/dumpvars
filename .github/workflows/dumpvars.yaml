@@ -54,14 +54,10 @@ jobs:
         run: |
           npm install -g openapi-to-md
           docker run --name swagger -p 8080:8080 --rm -d quay.io/ortelius/ms-dep-pkg-r:main-v10.0.705-g5a746f
-          mkdir docs 2>/dev/null | test 1
-          sleep 10
-          wget http://localhost:8080/openapi.json -O docs/openapi.json
+          sleep 5
+          wget http://localhost:8080/openapi.json -O /tmp/openapi.json
           docker stop swagger
-          cd docs
-          cat openapi.json
-          openapi-to-md openapi.json openapi.md
-          cd ..
+          sed -i.bak "/\[Discord\]/q" README.md && openapi-to-md /tmp/openapi.json >> README.md && rm README.md.bak
           git pull
           git add docs
           git commit -m "update openapi docs"
