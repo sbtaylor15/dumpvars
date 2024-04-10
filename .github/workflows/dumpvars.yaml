@@ -12,13 +12,21 @@ jobs:
 
     steps:
       - name: Dump Job Context
-        run: echo "${{ toJson(job) }}" | jq "."
+        run: |
+          echo "Job Context:"
+          echo '${{ toJson(job) }}' | jq '.'
 
       - name: Dump Step Context
-        run: echo "${{ toJson(steps) }}" | jq "."
+        run: |
+          echo "Step Context:"
+          echo '${{ toJson(steps) }}' | jq '.'
 
-      - name: Dump Env Context
-        run: echo "${{ toJson(env) }}" | jq "."
+      - name: Dump Workflow Context
+        run: |
+          echo "Workflow Context:"
+          echo '${{ toJson(env) }}' | jq '.'
 
       - name: Dump GitHub Context
-        run: echo "${{ toJson(github) }}" | jq "."
+        run: |
+          echo "GitHub Context:"
+          echo '${{ toJson(github) }}' | jq '.'
