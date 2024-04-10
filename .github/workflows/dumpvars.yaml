@@ -1,0 +1,24 @@
+name: Dump Variables
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  dump_variables:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Dump Job Context
+        run: echo "${{ toJson(job) }}"
+
+      - name: Dump Step Context
+        run: echo "${{ toJson(steps) }}"
+
+      - name: Dump Env Context
+        run: echo "${{ toJson(env) }}"
+
+      - name: Dump GitHub Context
+        run: echo "${{ toJson(github) }}"
