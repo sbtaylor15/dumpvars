@@ -32,3 +32,15 @@ jobs:
         run: |
           echo "GitHub Context:"
           echo '${{ toJson(github) }}' | jq '.'
+
+      - name: Swagger
+        run: |
+          docker run --name swagger -p 8080:8080 --rm -d quay.io/ortelius/ms-dep-pkg-r:main-v10.0.705-g5a746f
+          mkdir docs 2>/dev/null | test 1
+          wget http://localhost:8080/openapi.json -o docs/openapi.json
+          docker stop  swagger
+          npm install -g widdershins
+          widdershins docs/openapi.json -o docs/openapi.md
+          git add docs
+          git commit -m "update openapi docs"
+          git push
