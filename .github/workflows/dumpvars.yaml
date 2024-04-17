@@ -21,46 +21,27 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Configure Git
-        id: git
-        run: |
-            git config user.name "${{ github.actor }}"
-            git config user.email "${{ github.actor }}@users.noreply.github.com"
-        shell: bash
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
 
-      - name: Dump Job Context
+      - name: Install dependencies
         run: |
-          echo "Job Context:"
-          echo '${{ toJson(job) }}' | jq '.'
+          python -m pip install --upgrade pip
+          pip install -r requirements.in
 
-      - name: Dump Step Context
+      - name: execute py script
         run: |
-          echo "Step Context:"
-          echo '${{ toJson(steps) }}' | jq '.'
+          python main.py --loaddata
+          find . -name mitre.joblib -print
 
-      - name: Dump Workflow Context
-        run: |
-          echo "Workflow Context:"
-          echo '${{ toJson(env) }}' | jq '.'
-
-      - name: Dump GitHub Context
-        run: |
-          echo "GitHub Context:"
-          echo '${{ toJson(github) }}' | jq '.'
-
-      - name: Swagger
-        env:
-          GH_TOKEN: ${{ secrets.gh_token }}
-        run: |
-          if [ -f "main.py" ] && grep -q '\[Discord\]' README.md; then
-            npm install -g openapi-to-md
-            docker run --name swagger -p 8080:8080 --rm -d quay.io/ortelius/ms-dep-pkg-r:main-v10.0.705-g5a746f
-            sleep 5
-            wget http://localhost:8080/openapi.json -O /tmp/openapi.json
-            docker stop swagger
-            sed -i.bak "/\[Discord\]/q" README.md && openapi-to-md /tmp/openapi.json | tail -n +2 >> README.md && rm README.md.bak
-            git pull
-            git add README.md
-            git commit -m "update readme with latest swagger"
-            git push
-          fi
+      - name: Build and Push Docker Image
+        id: build
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
+        with:
+          push: false
+          tags: ms:latest
+          platforms: linux/amd64
+          attests: type=provenance,type=sbom
+        timeout-minutes: 100
